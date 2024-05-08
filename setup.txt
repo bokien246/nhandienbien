@@ -1,0 +1,7 @@
+opencv-python
+numpy
+easyocr
+pip install pillow
+imutils
+Reader
+pip install -r setup.txt
