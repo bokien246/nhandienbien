@@ -8,13 +8,16 @@ import cv2
 from easyocr import Reader
 from PIL import Image, ImageTk
 
+# Thiết lập giao diện Tkinter
 wd = Tk()
 wd.title("NHẬN DẠNG BIỂN SỐ XE")
 wd.geometry("640x640")
 
+# Thêm label
 lbl = Label(wd, text="NHẬN DẠNG BIỂN SỐ XE", fg="darkblue", font=("Monsterrat", 14))
 lbl.pack(side=TOP, pady=10)
 
+# Tạo các khung để chứa các phần tử giao diện
 window = Frame(wd)
 window.pack()
 window1 = Frame(window)
@@ -22,17 +25,21 @@ window1.pack(side=TOP)
 window2 = Frame(window)
 window2.pack()
 
+# Thêm combobox
 combo = Combobox(window1, state="readonly")
 combo['values'] = ("Nhập ảnh", "Camera", "Video")
 combo.current(0)
 combo.pack(side=TOP, padx=5, pady=5, anchor=N)
 
+# Tạo widget Label rỗng để hiện ảnh gốc
 label = Label(window)
 label.pack(side=BOTTOM, fill=BOTH, expand=1)
 
+# Khởi tạo mô hình EasyOCR
 reader = Reader(['en'])
 
 def delete():
+    # Xóa các widget con của cửa sổ
     for widget in window2.winfo_children():
         widget.destroy()
 
@@ -69,17 +76,20 @@ def detect_plate(image):
 
     cv2.drawContours(image_resized, [plate_contour], -1, (0, 255, 0), 3)
     
+    # Chuyển đổi ảnh sang định dạng PIL để thêm văn bản
     image_pil = Image.fromarray(cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(image_pil)
     font_path = "./times.ttf"
     font = ImageFont.truetype(font_path, 32)
 
+    # Tính toán vị trí trung tâm để in chữ ra giữa màn hình
     bbox = draw.textbbox((0, 0), text, font=font)
     text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
     text_x = (image_pil.width - text_width) / 2
     text_y = (image_pil.height - text_height) / 2
     draw.text((text_x, text_y), text, font=font, fill=(0, 255, 0))
 
+    # Chuyển đổi ảnh trở lại định dạng OpenCV
     result_image = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
     
     return result_image, text
@@ -160,7 +170,9 @@ def handleButton():
         hienthilogo = Button(window2, text="Hiển thị kết quả", command=show_frame, activeforeground="darkblue")
         hienthilogo.pack(side=TOP, padx=5, pady=5)
 
+# Thêm button để bắt đầu nhận diện
 btnNhap = Button(window1, text="Kiểm tra", command=handleButton, activeforeground="darkblue")
 btnNhap.pack(side=TOP, padx=5, pady=5)
 
+# Bắt đầu vòng lặp giao diện Tkinter
 wd.mainloop()
